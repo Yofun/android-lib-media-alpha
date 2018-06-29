@@ -7,6 +7,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="小视频录制"
+        android:text="拍照"
         android:onClick="startRecord"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="拍摄视频"
+        android:onClick="startRecordVideo"/>
 </LinearLayout>
