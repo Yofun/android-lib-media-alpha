@@ -125,7 +125,7 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
         }
 
         final int res;
-        switch (RecordVideoControl.flashType) {
+        switch (mRecordControl.flashType) {
             case RecordVideoControl.FLASH_MODE_ON:
                 res = R.drawable.hyf_ic_take_photo_video_flash_on_24dp;
                 break;
@@ -147,7 +147,7 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
             finish();
         } else if (i == R.id.hyf_fragment_recorder_video_ib_flash) {
             if (mRecordControl.getCameraFacing() == android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK) {
-                mRecordControl.setFlashMode(RecordVideoControl.flashType == RecordVideoControl.FLASH_MODE_ON
+                mRecordControl.setFlashMode(mRecordControl.flashType == RecordVideoControl.FLASH_MODE_ON
                         ? RecordVideoControl.FLASH_MODE_OFF
                         : RecordVideoControl.FLASH_MODE_ON);
             }

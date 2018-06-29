@@ -34,7 +34,7 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
     public final String TAG = RecordVideoControl.class.getSimpleName();
     public static final int FLASH_MODE_OFF = 0;
     public static final int FLASH_MODE_ON = 1;
-    public static int flashType = FLASH_MODE_OFF;
+    public int flashType = FLASH_MODE_OFF;
     private int previewWidth = 640;//预览宽
     private int previewHeight = 480;//预览高
     private int maxTime = 10000;//最大录制时间
