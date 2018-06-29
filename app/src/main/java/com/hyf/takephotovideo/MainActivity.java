@@ -1,5 +1,8 @@
 package com.hyf.takephotovideo;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,9 +14,14 @@ import com.hyf.takephotovideolib.TakePhotoVideoHelper;
 
 import java.io.File;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class MainActivity extends AppCompatActivity {
 
     String savePath;
+    String[] permiss = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startRecord(View view) {
-        TakePhotoVideoHelper.startTakePhoto(this, 100, savePath);
+        startRecordPhoto();
     }
 
     @Override
@@ -35,6 +43,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startRecordVideo(View view) {
-        TakePhotoVideoHelper.startTakeVideo(this, 100, savePath, 20000);
+        startRecordVideo();
+    }
+
+    // ——————————————————————————————————————————————————
+    private static final int requestCode = 113;
+
+    @AfterPermissionGranted(requestCode)
+    private void startRecordPhoto() {
+        if (EasyPermissions.hasPermissions(getContext(), permiss))
+            TakePhotoVideoHelper.startTakePhoto(this, 100, savePath);
+        else
+            EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
+    }
+
+    @AfterPermissionGranted(requestCode)
+    private void startRecordVideo() {
+        if (EasyPermissions.hasPermissions(getContext(), permiss))
+            TakePhotoVideoHelper.startTakeVideo(this, 100, savePath, 20000);
+        else
+            EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
+    }
+
+
+    public final Activity getActivity() {
+        return this;
+    }
+
+    public final Context getContext() {
+        return this;
     }
 }

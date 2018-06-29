@@ -32,7 +32,8 @@ public class RecordVideoUtils {
 
     public static List<Size> getResolutionList(Camera camera) {
         Parameters parameters = camera.getParameters();
-        List<Size> previewSizes = parameters.getSupportedPreviewSizes();
+//        List<Size> previewSizes = parameters.getSupportedPreviewSizes();
+        List<Size> previewSizes = parameters.getSupportedPictureSizes();
         return previewSizes;
     }
 

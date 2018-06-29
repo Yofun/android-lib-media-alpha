@@ -162,6 +162,7 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
         try {
             mCamera = Camera.open(mCameraId);
             if (mCamera != null) {
+                handleSurfaceChanged(mCamera);
                 startCameraPreview(mSurfaceHolder);
             }
 
@@ -213,28 +214,57 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
             }
         }
 
+        WindowManager wm = (WindowManager) mActivity.getSystemService(Context.WINDOW_SERVICE);
+        int width = wm.getDefaultDisplay().getWidth();
+        int height = wm.getDefaultDisplay().getHeight();
         // 获取相机提供的所有分辨率
         List<Camera.Size> resolutionList = RecordVideoUtils.getResolutionList(mCamera);
         if (resolutionList != null && resolutionList.size() > 0) {
             Collections.sort(resolutionList, new RecordVideoUtils.ResolutionComparator());
             Camera.Size previewSize = null;
             boolean hasSize = false;
-            // 使用 640*480 如果相机支持的话
-            // TODO: 2018/6/29  
+            // 手机支持的分辨率 列表
             for (int i = 0; i < resolutionList.size(); i++) {
                 Camera.Size size = resolutionList.get(i);
-                WindowManager wm = (WindowManager) mActivity.getSystemService(Context.WINDOW_SERVICE);
-                int width = wm.getDefaultDisplay().getWidth();
-                int height = wm.getDefaultDisplay().getHeight();
                 Log.v(TAG, "width:" + size.width + "   height:" + size.height);
-                if (size != null && size.width == height && size.height == width) {
-                    previewSize = size;
-                    previewWidth = previewSize.width;
-                    previewHeight = previewSize.height;
-                    hasSize = true;
-                    break;
-                }
             }
+
+            if (!hasSize)
+                for (int i = 0; i < resolutionList.size(); i++) {
+                    Camera.Size size = resolutionList.get(i);
+                    if (size != null && size.width == 1280 && size.height == 960) {
+                        previewSize = size;
+                        previewWidth = previewSize.width;
+                        previewHeight = previewSize.height;
+                        hasSize = true;
+                        break;
+                    }
+                }
+
+            if (!hasSize)
+                for (int i = 0; i < resolutionList.size(); i++) {
+                    Camera.Size size = resolutionList.get(i);
+                    if (size != null && size.width == height && size.height == width) {
+                        previewSize = size;
+                        previewWidth = previewSize.width;
+                        previewHeight = previewSize.height;
+                        hasSize = true;
+                        break;
+                    }
+                }
+
+            if (!hasSize)
+                for (int i = 0; i < resolutionList.size(); i++) {
+                    Camera.Size size = resolutionList.get(i);
+                    if (size != null && size.height == width) {
+                        previewSize = size;
+                        previewWidth = previewSize.width;
+                        previewHeight = previewSize.height;
+                        hasSize = true;
+                        break;
+                    }
+                }
+
             //如果相机不支持上述分辨率，使用中分辨率
             if (!hasSize) {
                 int mediumResolution = resolutionList.size() / 2;
