@@ -1,13 +1,9 @@
 package com.hyf.takephotovideolib;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.hardware.Camera;
-import android.net.Uri;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +16,10 @@ import com.hyf.takephotovideolib.view.RecordStartView;
 import com.hyf.takephotovideolib.view.SizeSurfaceView;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import top.zibin.luban.CompressionPredicate;
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
 
 /**
  * Created by  HYF on 2018/6/29.
@@ -177,7 +173,8 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
 
     @Override
     public void onTakePhoto() {
-        mRecordControl.takePhoto();
+        if (!mRecordControl.isTakeing())
+            mRecordControl.takePhoto();
     }
 
     // —————————————————————————————————————————————————————
@@ -213,40 +210,60 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
     }
 
     @Override
-    public void onTakePhoto(byte[] data) {
+    public void onTakePhoto(final File photo) {
         Log.v(TAG, "onTakePhoto");
         // 将图片保存在 DIRECTORY_DCIM 内存卡中
         try {
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-//            ByteArrayOutputStream out = new ByteArrayOutputStream();
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            Matrix matrix = new Matrix();
-            matrix.setRotate(90);
-            if (mRecordControl.getCameraFacing() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                matrix.postScale(1, -1);
-            }
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            // 创建文件
-            File mediaStorageDir = new File(savePath);
-            if (!mediaStorageDir.exists()) {
-                mediaStorageDir.mkdirs();
-            }
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
-            FileOutputStream stream = new FileOutputStream(mediaFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            stream.flush();
-            stream.close();
-            //切换fragment 预览刚刚的拍照
-            getFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.hyf_take_photo_video_fragment_container,
-                            new VideoPlayFragment(mediaFile.getAbsolutePath(), VideoPlayFragment.FILE_TYPE_PHOTO),
-                            VideoPlayFragment.TAG)
-                    .addToBackStack(null)
-                    .commit();
-        } catch (IOException exception) {
+            // 压缩图片
+            Luban.with(getContext())
+                    .load(photo)
+                    .ignoreBy(200)
+                    .setTargetDir(savePath)
+                    .filter(new CompressionPredicate() {
+                        @Override
+                        public boolean apply(String path) {
+                            return !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif"));
+                        }
+                    })
+                    .setCompressListener(new OnCompressListener() {
+                        ProgressDialog dialog;
+
+                        @Override
+                        public void onStart() {
+                            dialog = ProgressDialog.show(getContext(), "提示", "正在处理图片中...", false, false);
+                        }
+
+                        @Override
+                        public void onSuccess(File file) {
+                            if (dialog != null) dialog.dismiss();
+                            //切换fragment 预览刚刚的拍照
+                            getFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.hyf_take_photo_video_fragment_container,
+                                            new VideoPlayFragment(file.getAbsolutePath(), VideoPlayFragment.FILE_TYPE_PHOTO),
+                                            VideoPlayFragment.TAG)
+                                    .addToBackStack(null)
+                                    .commit();
+                            if (photo.exists()) photo.delete();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            if (dialog != null) dialog.dismiss();
+                            Log.v(TAG, "compress photo error:::::" + e.getMessage());
+                            // 如果压缩失败  直接使用原图
+                            getFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.hyf_take_photo_video_fragment_container,
+                                            new VideoPlayFragment(photo.getAbsolutePath(), VideoPlayFragment.FILE_TYPE_PHOTO),
+                                            VideoPlayFragment.TAG)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    })
+                    .launch();
+
+        } catch (Exception exception) {
             exception.printStackTrace();
         }
     }

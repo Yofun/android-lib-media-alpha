@@ -15,6 +15,7 @@ import android.support.annotation.ColorInt;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -30,10 +31,17 @@ public class RecordVideoUtils {
 
     ;
 
-    public static List<Size> getResolutionList(Camera camera) {
+    public static List<Size> getSupportedPreviewSizes(Camera camera) {
         Parameters parameters = camera.getParameters();
-//        List<Size> previewSizes = parameters.getSupportedPreviewSizes();
+        List<Size> previewSizes = parameters.getSupportedPreviewSizes();
+        Collections.sort(previewSizes, new RecordVideoUtils.PreviewSizeComparator());
+        return previewSizes;
+    }
+
+    public static List<Size> getSupportedPictureSizes(Camera camera) {
+        Parameters parameters = camera.getParameters();
         List<Size> previewSizes = parameters.getSupportedPictureSizes();
+        Collections.sort(previewSizes, new RecordVideoUtils.PictureSizeComparator());
         return previewSizes;
     }
 
@@ -44,7 +52,10 @@ public class RecordVideoUtils {
             return false;
     }
 
-    public static class ResolutionComparator implements Comparator<Size> {
+    /**
+     *  预览的比较类   正序  从小到大
+     */
+    private static class PreviewSizeComparator implements Comparator<Size> {
 
         @Override
         public int compare(Size lhs, Size rhs) {
@@ -53,8 +64,23 @@ public class RecordVideoUtils {
             else
                 return lhs.width - rhs.width;
         }
-
     }
+
+    /**
+     *  拍摄图片的比较类   倒序  从大到小
+     */
+    private static class PictureSizeComparator implements Comparator<Size> {
+
+        @Override
+        public int compare(Size lhs, Size rhs) {
+            if (lhs.height != rhs.height)
+                return rhs.height - lhs.height;
+            else
+                return rhs.width - lhs.width;
+        }
+    }
+
+
 
     public static String getDurationString(long durationMs) {
         return String.format(Locale.getDefault(), "%02d:%02d",

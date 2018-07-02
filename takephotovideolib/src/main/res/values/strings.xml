@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">TakePhotoVideoLib</string>
+    <style name="TakePhotoVideoTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>
