@@ -136,7 +136,7 @@ public class RecordVideoUtils {
         if (CamcorderProfile.hasProfile(cameraID, CamcorderProfile.QUALITY_720P)) {
             //对比上面480 这个选择 动作大时马赛克!!
             profile = CamcorderProfile.get(cameraID, CamcorderProfile.QUALITY_720P);
-            profile.videoBitRate = profile.videoBitRate / 15;
+            profile.videoBitRate = profile.videoBitRate / 10;
             return profile;
         }
         if (CamcorderProfile.hasProfile(cameraID, CamcorderProfile.QUALITY_480P)) {
