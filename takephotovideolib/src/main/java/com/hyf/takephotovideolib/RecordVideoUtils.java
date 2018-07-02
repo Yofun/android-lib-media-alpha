@@ -45,6 +45,13 @@ public class RecordVideoUtils {
         return previewSizes;
     }
 
+    public static List<Size> getSupportedVideoSizes(Camera camera) {
+        Parameters parameters = camera.getParameters();
+        List<Size> previewSizes = parameters.getSupportedVideoSizes();
+        Collections.sort(previewSizes, new RecordVideoUtils.PreviewSizeComparator());
+        return previewSizes;
+    }
+
     public static boolean isSdcardExist() {
         if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
             return true;
@@ -53,7 +60,7 @@ public class RecordVideoUtils {
     }
 
     /**
-     *  预览的比较类   正序  从小到大
+     * 预览的比较类   正序  从小到大
      */
     private static class PreviewSizeComparator implements Comparator<Size> {
 
@@ -67,7 +74,7 @@ public class RecordVideoUtils {
     }
 
     /**
-     *  拍摄图片的比较类   倒序  从大到小
+     * 拍摄图片的比较类   倒序  从大到小
      */
     private static class PictureSizeComparator implements Comparator<Size> {
 
@@ -79,7 +86,6 @@ public class RecordVideoUtils {
                 return rhs.width - lhs.width;
         }
     }
-
 
 
     public static String getDurationString(long durationMs) {
@@ -127,16 +133,16 @@ public class RecordVideoUtils {
      */
     public static CamcorderProfile getBestCamcorderProfile(int cameraID) {
         CamcorderProfile profile = CamcorderProfile.get(cameraID, CamcorderProfile.QUALITY_LOW);
-        if (CamcorderProfile.hasProfile(cameraID, CamcorderProfile.QUALITY_480P)) {
-            //对比下面720 这个选择 每帧不是很清晰
-            profile = CamcorderProfile.get(cameraID, CamcorderProfile.QUALITY_480P);
-            profile.videoBitRate = profile.videoBitRate / 5;
-            return profile;
-        }
         if (CamcorderProfile.hasProfile(cameraID, CamcorderProfile.QUALITY_720P)) {
             //对比上面480 这个选择 动作大时马赛克!!
             profile = CamcorderProfile.get(cameraID, CamcorderProfile.QUALITY_720P);
-            profile.videoBitRate = profile.videoBitRate / 35;
+            profile.videoBitRate = profile.videoBitRate / 15;
+            return profile;
+        }
+        if (CamcorderProfile.hasProfile(cameraID, CamcorderProfile.QUALITY_480P)) {
+            //对比下面720 这个选择 每帧不是很清晰
+            profile = CamcorderProfile.get(cameraID, CamcorderProfile.QUALITY_480P);
+            profile.videoBitRate = profile.videoBitRate / 2;
             return profile;
         }
         if (CamcorderProfile.hasProfile(cameraID, CamcorderProfile.QUALITY_CIF)) {

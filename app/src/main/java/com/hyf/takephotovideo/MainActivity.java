@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     @AfterPermissionGranted(requestCode)
     private void startRecordVideo() {
         if (EasyPermissions.hasPermissions(getContext(), permiss))
-            TakePhotoVideoHelper.startTakeVideo(this, 100, savePath, 20000);
+            TakePhotoVideoHelper.startTakeVideo(this, 100, savePath, 15000);
         else
             EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
     }

@@ -44,6 +44,9 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
     private int pictureWidth = 1920; // 拍照宽
     private int pictureHeight = 1080; // 拍照高
 
+    private int videoWidth = 1280; // 录像宽
+    private int videoHeight = 720; // 录像高
+
     private int maxTime = 10000;//最大录制时间
     private long maxSize = 30 * 1024 * 1024;//最大录制大小 默认30m
     public Activity mActivity;
@@ -167,9 +170,9 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
         if (mediaRecorder != null) {
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-            mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H263);
+            mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
             //设置分辨率，应设置在格式和编码器设置之后
-            mediaRecorder.setVideoSize(previewWidth, previewHeight);
+            mediaRecorder.setVideoSize(videoWidth, videoHeight);
             mediaRecorder.setVideoEncodingBitRate(800 * 1024);
         }
     }
@@ -773,7 +776,80 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
                 }
             }
         }
+        // 设置拍摄视频时的宽高
+        {
+            List<Camera.Size> videoSizeList = RecordVideoUtils.getSupportedVideoSizes(mCamera);
+            if (videoSizeList != null && !videoSizeList.isEmpty()) {
+                Camera.Size videoSize = null;
+                boolean hasSize = false;
+                Log.v(TAG, "---------support video list----------");
+                for (int i = 0; i < videoSizeList.size(); i++) {
+                    Camera.Size size = videoSizeList.get(i);
+                    Log.v(TAG, "width:" + size.width + "   height:" + size.height);
+                }
 
-        Log.v(TAG, "preview wh:" + previewWidth + "," + previewHeight + ";picture wh:" + pictureWidth + "," + pictureHeight);
+                if (!hasSize)
+                    for (int i = 0; i < videoSizeList.size(); i++) {
+                        Camera.Size size = videoSizeList.get(i);
+                        if (size != null && size.width == 1280 && size.height == 720) {
+                            videoSize = size;
+                            videoWidth = videoSize.width;
+                            videoHeight = videoSize.height;
+                            hasSize = true;
+                            break;
+                        }
+                    }
+
+                if (!hasSize)
+                    for (int i = 0; i < videoSizeList.size(); i++) {
+                        Camera.Size size = videoSizeList.get(i);
+                        if (size != null && size.width == height && size.height == width) {
+                            videoSize = size;
+                            videoWidth = videoSize.width;
+                            videoHeight = videoSize.height;
+                            hasSize = true;
+                            break;
+                        }
+                    }
+
+                if (!hasSize)
+                    for (int i = 0; i < videoSizeList.size(); i++) {
+                        Camera.Size size = videoSizeList.get(i);
+                        if (size != null && size.height == width) {
+                            videoSize = size;
+                            videoWidth = videoSize.width;
+                            videoHeight = videoSize.height;
+                            hasSize = true;
+                            break;
+                        }
+                    }
+
+                if (!hasSize)
+                    for (int i = 0; i < videoSizeList.size(); i++) {
+                        Camera.Size size = videoSizeList.get(i);
+                        float scale = (float) size.height / (float) size.width;
+                        if (size != null && scale == 0.5625f) {
+                            videoSize = size;
+                            videoWidth = videoSize.width;
+                            videoHeight = videoSize.height;
+                            hasSize = true;
+                            break;
+                        }
+                    }
+
+                //如果相机不支持上述分辨率，使用中分辨率
+                if (!hasSize) {
+                    int mediumResolution = videoSizeList.size() / 2;
+                    if (mediumResolution >= videoSizeList.size())
+                        mediumResolution = videoSizeList.size() - 1;
+                    videoSize = videoSizeList.get(mediumResolution);
+                    videoWidth = videoSize.width;
+                    videoHeight = videoSize.height;
+                }
+            }
+        }
+
+        Log.v(TAG, "preview wh:" + previewWidth + "," + previewHeight + "    picture wh:" + pictureWidth + "," + pictureHeight + "    video wh:" + videoWidth + "," + videoHeight);
     }
+
 }
