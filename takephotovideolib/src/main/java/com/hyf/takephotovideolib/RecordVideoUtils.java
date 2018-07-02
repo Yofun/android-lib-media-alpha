@@ -1,5 +1,6 @@
 package com.hyf.takephotovideolib;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.media.CamcorderProfile;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.support.annotation.ColorInt;
+import android.view.Surface;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -28,8 +30,6 @@ public class RecordVideoUtils {
 
     private RecordVideoUtils() {
     }
-
-    ;
 
     public static List<Size> getSupportedPreviewSizes(Camera camera) {
         Parameters parameters = camera.getParameters();
@@ -231,5 +231,44 @@ public class RecordVideoUtils {
             default:
                 return "";
         }
+    }
+
+    /**
+     * 适配相机旋转
+     *
+     * @param activity
+     * @param cameraId
+     * @param camera
+     */
+    public static void setCameraDisplayOrientation(Activity activity, int cameraId, Camera camera) {
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        Camera.getCameraInfo(cameraId, info);
+        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+        int result;
+        //前置
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360;
+        }
+        //后置
+        else {
+            result = (info.orientation - degrees + 360) % 360;
+        }
+        camera.setDisplayOrientation(result);
     }
 }

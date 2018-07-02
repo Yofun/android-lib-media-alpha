@@ -219,6 +219,7 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
      */
     public void takePhoto() {
         isTakeing = true;
+        RecordVideoUtils.setCameraDisplayOrientation(mActivity, mCameraId, mCamera);
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
