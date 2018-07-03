@@ -146,6 +146,11 @@ public class VideoPlayFragment extends BaseRecordFragment implements View.OnClic
      * 使用
      */
     public void useVideo() {
+        //先返回正常状态
+        if (orientationUtils != null && orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            videoView.getFullscreenButton().performClick();
+            return;
+        }
         TakePhotoVideoActivity activity = (TakePhotoVideoActivity) getActivity();
         //防止点击过快
         if (activity != null && !activity.isFinishing()) {
