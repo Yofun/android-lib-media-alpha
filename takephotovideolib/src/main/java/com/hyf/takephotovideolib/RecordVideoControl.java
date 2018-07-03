@@ -880,7 +880,7 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
             }
         }
 
-        Log.v(TAG, "preview wh:" + previewWidth + "," + previewHeight + "    picture wh:" + pictureWidth + "," + pictureHeight + "    video wh:" + videoWidth + "," + videoHeight);
+        Log.v(TAG, "preview wh:" + previewWidth + "," + previewHeight + "    picture wh:" + pictureWidth + "," + pictureHeight + "    video wh:" + videoWidth + "," + videoHeight + "    defaultVideoFrameRate:" + defaultVideoFrameRate);
     }
 
 }
