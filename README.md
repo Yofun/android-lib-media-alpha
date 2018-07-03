@@ -24,7 +24,7 @@
 #### Module build.gradle中
 
     dependencies {
-    	        implementation 'com.github.HyfSunshine:TakePhotoVideoLib:0.0.2'
+    	        implementation 'com.github.HyfSunshine:TakePhotoVideoLib:0.0.3'
     	}
 
 ## 二、已依赖
@@ -92,5 +92,7 @@
         }
     }
 ```
+
+
 
 
