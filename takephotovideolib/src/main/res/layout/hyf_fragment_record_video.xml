@@ -2,9 +2,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/hyf_fragment_recorder_video_rl_container"
-    android:background="#333"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#333">
 
     <com.hyf.takephotovideolib.view.SizeSurfaceView
         android:id="@+id/hyf_fragment_recorder_video_sv"
@@ -12,37 +12,43 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
-    <ImageView
-        android:id="@+id/hyf_fragment_recorder_video_iv_close"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="20dp"
-        android:padding="5dp"
-        android:src="@drawable/hyf_ic_take_photo_video_close_24dp"
-        tools:ignore="ContentDescription" />
+    <RelativeLayout
+        android:id="@+id/hyf_fragment_recorder_video_top_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/hyf_fragment_recorder_video_ib_flash"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignTop="@+id/hyf_fragment_recorder_video_ib_switch"
-        android:layout_gravity="center_vertical|start"
-        android:layout_toLeftOf="@+id/hyf_fragment_recorder_video_ib_switch"
-        android:layout_toStartOf="@+id/hyf_fragment_recorder_video_ib_switch"
-        android:src="@drawable/hyf_ic_take_photo_video_flash_off_24dp"
-        android:padding="5dp"
-        tools:ignore="ContentDescription" />
+        <ImageView
+            android:id="@+id/hyf_fragment_recorder_video_iv_close"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="16dp"
+            android:padding="5dp"
+            android:src="@drawable/hyf_ic_take_photo_video_close_24dp"
+            tools:ignore="ContentDescription" />
 
-    <ImageView
-        android:id="@+id/hyf_fragment_recorder_video_ib_switch"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="center_vertical|start"
-        android:layout_margin="20dp"
-        android:src="@drawable/mcam_camera"
-        tools:ignore="ContentDescription" />
+        <ImageView
+            android:id="@+id/hyf_fragment_recorder_video_ib_flash"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignTop="@+id/hyf_fragment_recorder_video_ib_switch"
+            android:layout_gravity="center_vertical|start"
+            android:layout_toLeftOf="@+id/hyf_fragment_recorder_video_ib_switch"
+            android:layout_toStartOf="@+id/hyf_fragment_recorder_video_ib_switch"
+            android:padding="5dp"
+            android:src="@drawable/hyf_ic_take_photo_video_flash_off_24dp"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/hyf_fragment_recorder_video_ib_switch"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical|start"
+            android:layout_margin="16dp"
+            android:src="@drawable/mcam_camera"
+            tools:ignore="ContentDescription" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/recording_layout"

@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -121,7 +120,7 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
         mCamera.unlock();
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setCamera(mCamera);
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         int orientation = ((TakePhotoVideoActivity) mActivity).getOrientation();
         if (mCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
@@ -131,11 +130,18 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
             mediaRecorder.setOrientationHint((90 + orientation) % 360);
         }
 
+//        try {
+//            mediaRecorder.setProfile(RecordVideoUtils.getBestCamcorderProfile(mCameraId));
+//        } catch (Exception e) {
+//            Log.e(TAG, "设置质量出错:" + e.getMessage());
+//            customMediaRecorder();
+//        }
+
         try {
-            mediaRecorder.setProfile(RecordVideoUtils.getBestCamcorderProfile(mCameraId));
+            customMediaRecorder();
         } catch (Exception e) {
             Log.e(TAG, "设置质量出错:" + e.getMessage());
-            customMediaRecorder();
+            mediaRecorder.setProfile(RecordVideoUtils.getBestCamcorderProfile(mCameraId));
         }
 
         // 设置帧速率，应设置在格式和编码器设置
@@ -174,7 +180,9 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
             mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
             //设置分辨率，应设置在格式和编码器设置之后
             mediaRecorder.setVideoSize(videoWidth, videoHeight);
-            mediaRecorder.setVideoEncodingBitRate(800 * 1024);
+            mediaRecorder.setVideoEncodingBitRate(55 * defaultVideoFrameRate * 1024);
+            mediaRecorder.setAudioEncodingBitRate(64100);
+            mediaRecorder.setAudioSamplingRate(44100);
         }
     }
 
@@ -220,7 +228,6 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
      */
     public void takePhoto() {
         isTakeing = true;
-        RecordVideoUtils.setCameraDisplayOrientation(mActivity, mCameraId, mCamera);
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
@@ -625,28 +632,34 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
      */
     private void handleSurfaceChanged(Camera mCamera) {
         boolean hasSupportRate = false;
-        List<Integer> supportedPreviewFrameRates = mCamera.getParameters()
-                .getSupportedPreviewFrameRates();
+        List<Integer> supportedPreviewFrameRates = RecordVideoUtils.getSupportedPreviewFrameRates(mCamera);
         if (supportedPreviewFrameRates != null
                 && supportedPreviewFrameRates.size() > 0) {
-            Collections.sort(supportedPreviewFrameRates);
             for (int i = 0; i < supportedPreviewFrameRates.size(); i++) {
                 int supportRate = supportedPreviewFrameRates.get(i);
                 if (supportRate == 30) {
+                    defaultVideoFrameRate = 30;
                     hasSupportRate = true;
+                    break;
                 }
             }
             Log.v(TAG, "supportRate::" + supportedPreviewFrameRates.toString());
-            if (hasSupportRate) {
-                defaultVideoFrameRate = 30;
-            } else {
-                defaultVideoFrameRate = supportedPreviewFrameRates.get(supportedPreviewFrameRates.size() - 1);
+            if (!hasSupportRate) {
+                for (int i = 0; i < supportedPreviewFrameRates.size(); i++) {
+                    int supportRate = supportedPreviewFrameRates.get(i);
+                    if (supportRate <= 30) {
+                        defaultVideoFrameRate = supportRate;
+                        hasSupportRate = true;
+                        break;
+                    }
+                }
             }
         }
 
         WindowManager wm = (WindowManager) mActivity.getSystemService(Context.WINDOW_SERVICE);
         int width = wm.getDefaultDisplay().getWidth();
         int height = wm.getDefaultDisplay().getHeight();
+        Log.v(TAG, "screen wh:" + width + "," + height);
         // 设置预览时的宽高
         {
             List<Camera.Size> resolutionList = RecordVideoUtils.getSupportedPreviewSizes(mCamera);
@@ -790,8 +803,21 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
                 Log.v(TAG, "---------support video list----------");
                 for (int i = 0; i < videoSizeList.size(); i++) {
                     Camera.Size size = videoSizeList.get(i);
-                    Log.v(TAG, "width:" + size.width + "   height:" + size.height);
+                    Log.v(TAG, "width:" + size.width + "   height:" + size.height + "   scale:" + ((float) size.height / (float) size.width));
                 }
+
+                if (!hasSize)
+                    for (int i = 0; i < videoSizeList.size(); i++) {
+                        Camera.Size size = videoSizeList.get(i);
+                        float scale = (float) size.height / (float) size.width;
+                        if (size != null && size.width >= 960 && scale == 0.5625f) {
+                            videoSize = size;
+                            videoWidth = videoSize.width;
+                            videoHeight = videoSize.height;
+                            hasSize = true;
+                            break;
+                        }
+                    }
 
                 if (!hasSize)
                     for (int i = 0; i < videoSizeList.size(); i++) {

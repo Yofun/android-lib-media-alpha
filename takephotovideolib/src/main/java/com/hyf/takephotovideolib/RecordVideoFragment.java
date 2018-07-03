@@ -1,6 +1,7 @@
 package com.hyf.takephotovideolib;
 
 import android.app.ProgressDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -74,6 +75,10 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
         mFlash = (ImageView) view.findViewById(R.id.hyf_fragment_recorder_video_ib_flash);
         mCancel = (ImageView) view.findViewById(R.id.hyf_fragment_recorder_video_iv_close);
         mRecordTV = (TextView) view.findViewById(R.id.hyf_fragment_recorder_video_tv_des);
+        RelativeLayout topContentView = view.findViewById(R.id.hyf_fragment_recorder_video_top_container);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            topContentView.setPadding(0, RecordVideoUtils.getStatusBarHeight(getContext()), 0, 0);
+        }
     }
 
 

@@ -9,8 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.OrientationEventListener;
 
-import com.shuyu.gsyvideoplayer.GSYVideoManager;
-
 import java.util.List;
 
 public class TakePhotoVideoActivity extends AppCompatActivity {
@@ -32,6 +30,7 @@ public class TakePhotoVideoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_photo_video);
+        RecordVideoUtils.setFullScreen(this);
         initIntent();
         initOrientationListener();
         if (savedInstanceState == null) {

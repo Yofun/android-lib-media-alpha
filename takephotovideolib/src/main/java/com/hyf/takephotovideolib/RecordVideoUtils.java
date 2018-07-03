@@ -12,8 +12,11 @@ import android.hardware.Camera.Size;
 import android.media.CamcorderProfile;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
+import android.os.Build;
 import android.support.annotation.ColorInt;
-import android.view.Surface;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -234,41 +237,49 @@ public class RecordVideoUtils {
     }
 
     /**
-     * 适配相机旋转
+     * 设置内容全屏,即内容延伸至状态栏底部,状态栏文字还在
      *
      * @param activity
-     * @param cameraId
-     * @param camera
      */
-    public static void setCameraDisplayOrientation(Activity activity, int cameraId, Camera camera) {
-        Camera.CameraInfo info = new Camera.CameraInfo();
-        Camera.getCameraInfo(cameraId, info);
-        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        int degrees = 0;
-        switch (rotation) {
-            case Surface.ROTATION_0:
-                degrees = 0;
-                break;
-            case Surface.ROTATION_90:
-                degrees = 90;
-                break;
-            case Surface.ROTATION_180:
-                degrees = 180;
-                break;
-            case Surface.ROTATION_270:
-                degrees = 270;
-                break;
+    public static void setFullScreen(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = activity.getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                    | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // 设置透明状态栏,这样才能让 ContentView 向上
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
-        int result;
-        //前置
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            result = (info.orientation + degrees) % 360;
-            result = (360 - result) % 360;
-        }
-        //后置
-        else {
-            result = (info.orientation - degrees + 360) % 360;
-        }
-        camera.setDisplayOrientation(result);
     }
+
+    /**
+     * 获取状态栏高度
+     *
+     * @param context context
+     * @return 状态栏高度px
+     */
+    public static int getStatusBarHeight(Context context) {
+        // 获得状态栏高度
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        return context.getResources().getDimensionPixelSize(resourceId);
+    }
+
+
+    // ——————————————————————排序——————————————————————
+    private static class NumInverted implements Comparator<Integer> {
+        @Override
+        public int compare(Integer integer, Integer t1) {
+            return t1 - integer;
+        }
+    }
+
+    public static final List<Integer> getSupportedPreviewFrameRates(Camera camera) {
+        List<Integer> supportedPreviewFrameRates = camera.getParameters().getSupportedPreviewFrameRates();
+        Collections.sort(supportedPreviewFrameRates, new NumInverted());
+        return supportedPreviewFrameRates;
+    }
+
 }

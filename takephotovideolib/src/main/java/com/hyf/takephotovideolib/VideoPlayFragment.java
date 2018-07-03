@@ -8,11 +8,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
 import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder;
@@ -57,6 +59,10 @@ public class VideoPlayFragment extends BaseRecordFragment implements View.OnClic
         photoPlay = (ImageView) view.findViewById(R.id.photo_play);
         videoCancel = (ImageView) view.findViewById(R.id.video_cancel);
         videoUse = (ImageView) view.findViewById(R.id.video_use);
+        RelativeLayout topContentView = view.findViewById(R.id.hyf_fragment_play_video_top_content);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            topContentView.setPadding(0, RecordVideoUtils.getStatusBarHeight(getContext()), 0, 0);
+        }
     }
 
     private void initData() {
