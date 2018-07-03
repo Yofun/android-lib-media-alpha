@@ -8,8 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.OrientationEventListener;
-import android.view.Window;
-import android.view.WindowManager;
+
+import com.shuyu.gsyvideoplayer.GSYVideoManager;
 
 import java.util.List;
 
@@ -25,21 +25,26 @@ public class TakePhotoVideoActivity extends AppCompatActivity {
     private int duration;
     private String savePath;
 
+
+    private CameraOrientationListener orientationListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_photo_video);
         initIntent();
-        orientationListener = new CameraOrientationListener(this);
-        orientationListener.enable();
-
-//        startOrientationChangeListener();
+        initOrientationListener();
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.hyf_take_photo_video_fragment_container, RecordVideoFragment.newInstance(mode, duration, savePath, 1024 * 1024 * 30L))
                     .commit();
         }
+    }
+
+    private void initOrientationListener() {
+        orientationListener = new CameraOrientationListener(this);
+        orientationListener.enable();
     }
 
     /**
@@ -60,7 +65,6 @@ public class TakePhotoVideoActivity extends AppCompatActivity {
     public void onBackPressed() {
         try {
             List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-            Log.e("当前的frament", fragmentList.get(fragmentList.size() - 1).toString() + "");
             ((BaseRecordFragment) fragmentList.get(fragmentList.size() - 1)).finish();
         } catch (Exception e) {
             finish();
@@ -106,41 +110,15 @@ public class TakePhotoVideoActivity extends AppCompatActivity {
         finish();
     }
 
-
-    private CameraOrientationListener orientationListener;
-    /**
-     * 当前屏幕旋转角度
-     */
-    private int mOrientation = 0;
-
-    /**
-     * 启动屏幕朝向改变监听函数 用于在屏幕横竖屏切换时改变保存的图片的方向
-     */
-    private void startOrientationChangeListener() {
-        OrientationEventListener mOrEventListener = new OrientationEventListener(this) {
-            @Override
-            public void onOrientationChanged(int rotation) {
-                Log.i(TAG, "当前屏幕手持角度方法:" + rotation + "°");
-                if (((rotation >= 0) && (rotation <= 45)) || (rotation > 315)) {
-                    rotation = 0;
-                } else if ((rotation > 45) && (rotation <= 135)) {
-                    rotation = 90;
-                } else if ((rotation > 135) && (rotation <= 225)) {
-                    rotation = 180;
-                } else if ((rotation > 225) && (rotation <= 315)) {
-                    rotation = 270;
-                } else {
-                    rotation = 0;
-                }
-                if (rotation == mOrientation)
-                    return;
-                mOrientation = rotation;
-
-            }
-        };
-        mOrEventListener.enable();
+    public final int getOrientation() {
+        if (orientationListener != null) {
+            return orientationListener.getOrientation();
+        }
+        return 0;
     }
 
+
+    // ————————————————————————————————————————————————————
 
     /**
      * 当方向改变时，将调用侦听器onOrientationChanged(int)
@@ -148,7 +126,7 @@ public class TakePhotoVideoActivity extends AppCompatActivity {
     private class CameraOrientationListener extends OrientationEventListener {
 
         private int mCurrentNormalizedOrientation;
-        private int mRememberedNormalOrientation;
+        private int mRememberedNormalOrientation = -1;
 
         public CameraOrientationListener(Context context) {
             super(context, SensorManager.SENSOR_DELAY_NORMAL);
@@ -156,14 +134,14 @@ public class TakePhotoVideoActivity extends AppCompatActivity {
 
         @Override
         public void onOrientationChanged(final int orientation) {
-//            Log.i(TAG, "当前屏幕手持角度:" + orientation + "°");
             if (orientation != ORIENTATION_UNKNOWN) {
                 mCurrentNormalizedOrientation = normalize(orientation);
             }
-
-//            Log.i(TAG, "当前屏幕手持角度:" + orientation + "°");
-            String str = "当前屏幕手持角度:" + orientation + "°\n当前屏幕手持方向:" + mCurrentNormalizedOrientation;
-            Log.i(TAG, str);
+            // 避免重复
+            if (mRememberedNormalOrientation != mCurrentNormalizedOrientation) {
+                mRememberedNormalOrientation = mCurrentNormalizedOrientation;
+                Log.v(TAG, " current angle is " + orientation + ", orientation is " + mRememberedNormalOrientation);
+            }
         }
 
         private int normalize(int degrees) {
@@ -185,19 +163,7 @@ public class TakePhotoVideoActivity extends AppCompatActivity {
             throw new RuntimeException("The physics as we know them are no more. Watch out for anomalies.");
         }
 
-        /**
-         * 记录方向
-         */
-        public void rememberOrientation() {
-            mRememberedNormalOrientation = mCurrentNormalizedOrientation;
-        }
-
-        /**
-         * 获取当前方向
-         *
-         * @return
-         */
-        public int getRememberedNormalOrientation() {
+        public final int getOrientation() {
             return mRememberedNormalOrientation;
         }
     }

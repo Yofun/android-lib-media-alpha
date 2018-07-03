@@ -2,6 +2,7 @@ package com.hyf.takephotovideolib;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -12,22 +13,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.VideoView;
+
+import com.shuyu.gsyvideoplayer.GSYVideoManager;
+import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder;
+import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
+import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 
 import java.io.File;
 
 /**
  * 视频播放
  */
+@SuppressLint("ValidFragment")
 public class VideoPlayFragment extends BaseRecordFragment implements View.OnClickListener {
     public static final String TAG = VideoPlayFragment.class.getSimpleName();
     public static final int FILE_TYPE_VIDEO = 0;
     public static final int FILE_TYPE_PHOTO = 1;
-    private VideoView videoView;
 
     private String filePath;
     private int fileType;
     private ImageView photoPlay, videoUse, videoCancel;
+    private StandardGSYVideoPlayer videoView;
+
+    private OrientationUtils orientationUtils;
 
     @SuppressLint("ValidFragment")
     public VideoPlayFragment(String filePath, int type) {
@@ -36,42 +44,47 @@ public class VideoPlayFragment extends BaseRecordFragment implements View.OnClic
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.hyf_fragment_video_play, container, false);
         initView(view);
+        initData();
+        initListener();
         return view;
     }
 
     private void initView(View view) {
-        videoView = (VideoView) view.findViewById(R.id.video_play);
+        videoView = view.findViewById(R.id.hyf_fragment_play_video_view);
         photoPlay = (ImageView) view.findViewById(R.id.photo_play);
         videoCancel = (ImageView) view.findViewById(R.id.video_cancel);
         videoUse = (ImageView) view.findViewById(R.id.video_use);
-        videoCancel.setOnClickListener(this);
-        videoUse.setOnClickListener(this);
+    }
+
+    private void initData() {
         if (fileType == FILE_TYPE_VIDEO) {
             videoView.setVisibility(View.VISIBLE);
-            photoPlay.setVisibility(View.GONE);
-            videoView.setVideoURI(Uri.parse(filePath));
-            videoView.start();
-            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            //外部辅助的旋转，帮助全屏
+            orientationUtils = new OrientationUtils(getActivity(), videoView);
+            //初始化不打开外部的旋转
+            orientationUtils.setEnable(false);
+            videoView.setUp(filePath, true, "");
+            videoView.getTitleTextView().setVisibility(View.GONE);
+            //设置返回键
+            videoView.getBackButton().setVisibility(View.GONE);
+            //设置全屏按键功能,这是使用的是选择屏幕，而不是全屏
+            videoView.getFullscreenButton().setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                    mp.setLooping(true);
+                public void onClick(View v) {
+                    orientationUtils.resolveByClick();
                 }
             });
+            //是否可以滑动调整
+            videoView.setIsTouchWiget(false);
+            // 设置是否循环播放
+            videoView.setLooping(true);
 
-            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    videoView.setVideoPath(filePath);
-                    videoView.start();
-                }
-            });
+            videoView.startPlayLogic();
+
         } else if (fileType == FILE_TYPE_PHOTO) {
-            videoView.setVisibility(View.GONE);
             photoPlay.setVisibility(View.VISIBLE);
             Bitmap bitmap = BitmapFactory.decodeFile(filePath);
             Matrix m = new Matrix();
@@ -82,8 +95,11 @@ public class VideoPlayFragment extends BaseRecordFragment implements View.OnClic
             } catch (OutOfMemoryError ex) {
             }
         }
+    }
 
-
+    private void initListener() {
+        videoCancel.setOnClickListener(this);
+        videoUse.setOnClickListener(this);
     }
 
     @Override
@@ -96,7 +112,6 @@ public class VideoPlayFragment extends BaseRecordFragment implements View.OnClic
         }
     }
 
-
     /**
      * 取消
      */
@@ -106,6 +121,13 @@ public class VideoPlayFragment extends BaseRecordFragment implements View.OnClic
 
     @Override
     public void finish() {
+        //先返回正常状态
+        if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            videoView.getFullscreenButton().performClick();
+            return;
+        }
+        //释放所有
+        videoView.setVideoAllCallBack(null);
         // 删除当前的
         File file = new File(filePath);
         if (file.exists()) file.delete();
@@ -131,6 +153,28 @@ public class VideoPlayFragment extends BaseRecordFragment implements View.OnClic
                 activity.returnPhotoPath(filePath);
             }
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (videoView != null)
+            videoView.onVideoPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (videoView != null)
+            videoView.onVideoResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        GSYVideoManager.releaseAllVideos();
+        if (orientationUtils != null)
+            orientationUtils.releaseListener();
     }
 }
 

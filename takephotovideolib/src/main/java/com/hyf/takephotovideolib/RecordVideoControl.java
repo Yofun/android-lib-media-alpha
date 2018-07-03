@@ -123,11 +123,12 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
         mediaRecorder.setCamera(mCamera);
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
-        if (mCameraId == 1) {
-            mediaRecorder.setOrientationHint(270);
+        int orientation = ((TakePhotoVideoActivity) mActivity).getOrientation();
+        if (mCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            // 前置
+            mediaRecorder.setOrientationHint(270 - orientation);
         } else {
-            mediaRecorder.setOrientationHint(90);
+            mediaRecorder.setOrientationHint((90 + orientation) % 360);
         }
 
         try {
@@ -224,12 +225,15 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
                 try {
+                    int orientation = ((TakePhotoVideoActivity) mActivity).getOrientation();
                     // 将图片保存在 DIRECTORY_DCIM 内存卡中
                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                     Matrix matrix = new Matrix();
-                    matrix.setRotate(90);
                     if (getCameraFacing() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                        matrix.postScale(1, -1);
+                        matrix.setRotate(-90 - orientation);
+                        matrix.postScale(-1, 1);
+                    } else {
+                        matrix.setRotate(90 + orientation);
                     }
                     bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                     // 创建文件
