@@ -34,16 +34,20 @@ public class MainActivity extends AppCompatActivity {
         startRecordPhoto();
     }
 
+    public void startRecordPhotoVideo(View view) {
+        startRecordPhotoVideo();
+    }
+
+    public void startRecordVideo(View view) {
+        startRecordVideo();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 100 && resultCode == RESULT_OK) {
             String path = data.getStringExtra(TakePhotoVideoHelper.RESULT_DATA);
             Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public void startRecordVideo(View view) {
-        startRecordVideo();
     }
 
     // ——————————————————————————————————————————————————
@@ -65,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
             EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
     }
 
+    @AfterPermissionGranted(requestCode)
+    private void startRecordPhotoVideo() {
+        if (EasyPermissions.hasPermissions(getContext(), permiss))
+            TakePhotoVideoHelper.startTakePhotoVideo(this, 100, savePath, 15000);
+        else
+            EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
+    }
+
 
     public final Activity getActivity() {
         return this;
@@ -73,4 +85,6 @@ public class MainActivity extends AppCompatActivity {
     public final Context getContext() {
         return this;
     }
+
+
 }

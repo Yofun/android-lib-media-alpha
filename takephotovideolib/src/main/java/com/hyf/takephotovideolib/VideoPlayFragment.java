@@ -122,12 +122,13 @@ public class VideoPlayFragment extends BaseRecordFragment implements View.OnClic
     @Override
     public void finish() {
         //先返回正常状态
-        if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+        if (orientationUtils != null && orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             videoView.getFullscreenButton().performClick();
             return;
         }
         //释放所有
-        videoView.setVideoAllCallBack(null);
+        if (videoView != null)
+            videoView.setVideoAllCallBack(null);
         // 删除当前的
         File file = new File(filePath);
         if (file.exists()) file.delete();
