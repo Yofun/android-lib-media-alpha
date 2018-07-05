@@ -139,6 +139,22 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
         mFlash.setImageResource(res);
     }
 
+    /**
+     * 打开预览的fragment进行预览  照片/ 视频
+     *
+     * @param type
+     * @param filePath
+     */
+    private final void startPreview(int type, String filePath) {
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.hyf_take_photo_video_fragment_container,
+                        new VideoPlayFragment(filePath, type),
+                        VideoPlayFragment.TAG)
+                .addToBackStack(null)
+                .commit();
+    }
+
     // ——————————————————————————————————————————————————————
 
     @Override
@@ -197,16 +213,8 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
     }
 
     @Override
-    public void onRecordFinish(String videoPath) {
-        Log.v(TAG, "onRecordFinish:" + videoPath);
-        // 预览刚刚拍摄的视频
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.hyf_take_photo_video_fragment_container,
-                        new VideoPlayFragment(videoPath, VideoPlayFragment.FILE_TYPE_VIDEO),
-                        VideoPlayFragment.TAG)
-                .addToBackStack(null)
-                .commit();
+    public void onRecordFinish(final String videoPath) {
+        startPreview(VideoPlayFragment.FILE_TYPE_VIDEO, videoPath);
     }
 
     @Override
@@ -242,13 +250,7 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
                         public void onSuccess(File file) {
                             if (dialog != null) dialog.dismiss();
                             //切换fragment 预览刚刚的拍照
-                            getFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.hyf_take_photo_video_fragment_container,
-                                            new VideoPlayFragment(file.getAbsolutePath(), VideoPlayFragment.FILE_TYPE_PHOTO),
-                                            VideoPlayFragment.TAG)
-                                    .addToBackStack(null)
-                                    .commit();
+                            startPreview(VideoPlayFragment.FILE_TYPE_PHOTO, file.getAbsolutePath());
                             if (photo.exists()) photo.delete();
                         }
 
@@ -257,13 +259,7 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
                             if (dialog != null) dialog.dismiss();
                             Log.v(TAG, "compress photo error:::::" + e.getMessage());
                             // 如果压缩失败  直接使用原图
-                            getFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.hyf_take_photo_video_fragment_container,
-                                            new VideoPlayFragment(photo.getAbsolutePath(), VideoPlayFragment.FILE_TYPE_PHOTO),
-                                            VideoPlayFragment.TAG)
-                                    .addToBackStack(null)
-                                    .commit();
+                            startPreview(VideoPlayFragment.FILE_TYPE_PHOTO, photo.getAbsolutePath());
                         }
                     })
                     .launch();
