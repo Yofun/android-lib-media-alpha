@@ -1,7 +1,14 @@
 package com.hyf.takephotovideolib;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.MediaStore;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by  HYF on 2018/6/29.
@@ -51,6 +58,9 @@ public class TakePhotoVideoHelper {
     public static final void startTakePhotoVideo(Activity activity, int requestCode, String savePath, int duration) {
         startRecord(activity, Mode.RECORD_MODE_ALL, requestCode, duration, savePath);
     }
+
+
+    // —————————————————————私有方法————————————————————
 
     private static final void startRecord(Activity activity, int mode, int requestCode, int duration, String savePath) {
         Intent intent = new Intent(activity, TakePhotoVideoActivity.class);

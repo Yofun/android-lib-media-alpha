@@ -24,14 +24,14 @@
 #### Module build.gradle中
 
     dependencies {
-    	        implementation 'com.github.HyfSunshine:TakePhotoVideoLib:0.0.3'
-    	}
+        implementation 'com.github.HyfSunshine:TakePhotoVideoLib:0.0.3'
+     }
 
 ## 二、已依赖
     // 鲁班图片压缩  https://github.com/Curzibn/Luban
-    implementation 'top.zibin:Luban:1.1.7'
+    compile 'top.zibin:Luban:1.1.7'
     // GSY播放器   https://github.com/CarGuo/GSYVideoPlayer
-    implementation 'com.shuyu:GSYVideoPlayer:5.0.1'
+    compile 'com.shuyu:GSYVideoPlayer:5.0.1'
 
 ## 三、使用注意事项
 
@@ -54,7 +54,8 @@
             ...
             ndk {
                 //APP的build.gradle设置支持的SO库架构
-                abiFilters 'armeabi', 'armeabi-v7a', 'x86'
+                //abiFilters 'armeabi', 'armeabi-v7a', 'x86'
+                abiFilters 'armeabi'
             }
         }
     }
@@ -84,13 +85,13 @@
 #### 回调
 
 ``` java
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 100 && resultCode == RESULT_OK) {
-            String path = data.getStringExtra(TakePhotoVideoHelper.RESULT_DATA);
-            Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
-        }
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == 100 && resultCode == RESULT_OK) {
+        String path = data.getStringExtra(TakePhotoVideoHelper.RESULT_DATA);
+        Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
     }
+}
 ```
 
 ## 历史更新

@@ -37,8 +37,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'top.zibin:Luban:1.1.7'
-    implementation('com.shuyu:GSYVideoPlayer:5.0.1') {
+    compile 'top.zibin:Luban:1.1.7'
+    compile('com.shuyu:GSYVideoPlayer:5.0.1') {
         exclude group: 'com.android.support'
     }
 }

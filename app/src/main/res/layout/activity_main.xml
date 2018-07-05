@@ -21,4 +21,10 @@
         android:layout_height="wrap_content"
         android:text="拍摄照片和视频"
         android:onClick="startRecordPhotoVideo"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="调用系统相机拍照"
+        android:onClick="startSysCamera"/>
 </LinearLayout>
