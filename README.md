@@ -60,7 +60,7 @@
     }
     ```
 
-3. minSdkVersion 16
+3. `minSdkVersion 16`
 
 ## 四、使用方法
 
