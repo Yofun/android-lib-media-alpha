@@ -180,8 +180,9 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
             mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
             //设置分辨率，应设置在格式和编码器设置之后
             mediaRecorder.setVideoSize(videoWidth, videoHeight);
-            mediaRecorder.setVideoEncodingBitRate(52 * defaultVideoFrameRate * 1024);
-            mediaRecorder.setAudioEncodingBitRate(64100);
+//            mediaRecorder.setVideoEncodingBitRate(52 * defaultVideoFrameRate * 1024);
+            mediaRecorder.setVideoEncodingBitRate(1400 * 1024);
+            mediaRecorder.setAudioEncodingBitRate(65536);
             mediaRecorder.setAudioSamplingRate(44100);
         }
     }
@@ -653,6 +654,11 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
                         break;
                     }
                 }
+            }
+
+            if (!hasSupportRate) {
+                defaultVideoFrameRate = supportedPreviewFrameRates.get(supportedPreviewFrameRates.size() - 1);
+                hasSupportRate = true;
             }
         }
 
