@@ -24,7 +24,7 @@
 #### Module build.gradle中
 
     dependencies {
-        implementation 'com.github.HyfSunshine:TakePhotoVideoLib:0.0.3'
+        implementation 'com.github.HyfSunshine:TakePhotoVideoLib:0.0.4'
      }
 
 ## 二、已依赖
@@ -176,6 +176,10 @@ TakePhotoVideoHelper.startPlayVideo(getContext(), "搁浅 周杰伦", "http://vi
 ```
 
 ## 历史更新
+### 0.0.4
+1. 更新拍摄视频码率算法
+2. 新增使用系统相机拍照、打开系统文件管理器选择文件、视频预览播放
+3. 更新界面启动动画
 
 ### 0.0.3
 1. 修复拍照、录制视频方向的问题
