@@ -1,7 +1,11 @@
-package com.hyf.takephotovideolib;
+package com.hyf.takephotovideolib.support;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+
+import com.hyf.takephotovideolib.preview.PreviewVideoActivity;
+import com.hyf.takephotovideolib.record.TakePhotoVideoActivity;
 
 /**
  * Created by  HYF on 2018/6/29.
@@ -78,6 +82,20 @@ public class TakePhotoVideoHelper {
         intent.setType(mimeType);//无类型限制
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         activity.startActivityForResult(intent, requestCode);
+    }
+
+
+    public static final void startPlayVideo(Context context, String videoPath) {
+        Intent intent = new Intent(context, PreviewVideoActivity.class);
+        intent.putExtra(PreviewVideoActivity.FILE_PATH, videoPath);
+        context.startActivity(intent);
+    }
+
+    public static final void startPlayVideo(Context context, String title, String videoPath) {
+        Intent intent = new Intent(context, PreviewVideoActivity.class);
+        intent.putExtra(PreviewVideoActivity.TITLE, title);
+        intent.putExtra(PreviewVideoActivity.FILE_PATH, videoPath);
+        context.startActivity(intent);
     }
 
 

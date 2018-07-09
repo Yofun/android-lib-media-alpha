@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 
 import com.hyf.takephotovideolib.R;
-import com.hyf.takephotovideolib.TakePhotoVideoHelper;
+import com.hyf.takephotovideolib.support.TakePhotoVideoHelper;
 
 /**
  * Created by dalong on 2017/1/4.

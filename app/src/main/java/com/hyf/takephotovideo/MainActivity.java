@@ -13,8 +13,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
-import com.hyf.takephotovideolib.TakePhotoVideoHelper;
 import com.hyf.takephotovideolib.support.SystemCapturePhoto;
+import com.hyf.takephotovideolib.support.TakePhotoVideoHelper;
 import com.hyf.takephotovideolib.util.FileExplorerUriUtil;
 
 import java.io.File;
@@ -50,25 +50,36 @@ public class MainActivity extends AppCompatActivity {
         mCapturePhoto = new SystemCapturePhoto(getActivity(), RC_OPEN_SYSTEM_CAMERA, savePath);
     }
 
+    // 拍照
     public void startRecord(View view) {
         startRecordPhoto();
     }
 
+    // 录像
     public void startRecordVideo(View view) {
         startRecordVideo();
     }
 
+    // 拍照+录像
     public void startRecordPhotoVideo(View view) {
         startRecordPhotoVideo();
     }
 
+    // 使用系统相机拍照
     public void startSysCamera(View view) {
         startOpenSysCamera();
     }
 
+    // 打开文件管理器选择文件
     public void startFileExplorer(View view) {
         TakePhotoVideoHelper.startFileExplorer(this, RC_OPEN_FILE_EXPLORER);
     }
+
+    // 预览视频
+    public void startPreviewVideo(View view) {
+        startPlayVideo();
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -153,6 +164,14 @@ public class MainActivity extends AppCompatActivity {
     private void startOpenSysCamera() {
         if (EasyPermissions.hasPermissions(getContext(), permiss))
             mCapturePhoto.openCamera();
+        else
+            EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
+    }
+
+    @AfterPermissionGranted(requestCode)
+    private void startPlayVideo() {
+        if (EasyPermissions.hasPermissions(getContext(), permiss))
+            TakePhotoVideoHelper.startPlayVideo(getContext(), "搁浅 周杰伦", "http://videohy.tc.qq.com/vcloud1049.tc.qq.com/1049_M2100551002SKht50WIKgb1001542292.f20.mp4?vkey=1E1091D340EAF89B357873569097EA16352BBC255E72647C79053BE7612071EC4F8E3DB672EDA93002C56833E8079641BE9C8D834A1C85B5A34E269FEFCC6A697A8EACE7BED93FDBB775DAC90C9774D8725B85524902667C&ocid=332537772");
         else
             EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
     }

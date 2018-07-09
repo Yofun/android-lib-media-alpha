@@ -1,4 +1,4 @@
-package com.hyf.takephotovideolib;
+package com.hyf.takephotovideolib.record;
 
 import android.support.v4.app.Fragment;
 

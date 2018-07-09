@@ -1,4 +1,4 @@
-package com.hyf.takephotovideolib;
+package com.hyf.takephotovideolib.record;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,6 +19,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.hyf.takephotovideolib.support.TakePhotoVideoHelper;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +36,11 @@ public class RecordVideoUtils {
     private RecordVideoUtils() {
     }
 
+    /**
+     *  获取手机摄像头支持预览的尺寸集合
+     * @param camera
+     * @return
+     */
     public static List<Size> getSupportedPreviewSizes(Camera camera) {
         Parameters parameters = camera.getParameters();
         List<Size> previewSizes = parameters.getSupportedPreviewSizes();
@@ -41,6 +48,11 @@ public class RecordVideoUtils {
         return previewSizes;
     }
 
+    /**
+     * 获取手机摄像头支持拍摄照片像素的集合
+     * @param camera
+     * @return
+     */
     public static List<Size> getSupportedPictureSizes(Camera camera) {
         Parameters parameters = camera.getParameters();
         List<Size> previewSizes = parameters.getSupportedPictureSizes();
@@ -48,6 +60,11 @@ public class RecordVideoUtils {
         return previewSizes;
     }
 
+    /**
+     *  获取摄像头支持拍摄视频的像素集合
+     * @param camera
+     * @return
+     */
     public static List<Size> getSupportedVideoSizes(Camera camera) {
         Parameters parameters = camera.getParameters();
         List<Size> previewSizes = parameters.getSupportedVideoSizes();
@@ -55,6 +72,10 @@ public class RecordVideoUtils {
         return previewSizes;
     }
 
+    /**
+     *  判断sd卡是否存在
+     * @return
+     */
     public static boolean isSdcardExist() {
         if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
             return true;

@@ -1,4 +1,4 @@
-package com.hyf.takephotovideolib;
+package com.hyf.takephotovideolib.record;
 
 import android.app.ProgressDialog;
 import android.os.Build;
@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.hyf.takephotovideolib.R;
 import com.hyf.takephotovideolib.view.RecordStartView;
 import com.hyf.takephotovideolib.view.SizeSurfaceView;
 

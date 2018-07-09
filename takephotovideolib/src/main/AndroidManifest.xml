@@ -2,18 +2,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hyf.takephotovideolib">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application>
         <activity
-            android:name=".TakePhotoVideoActivity"
+            android:name=".record.TakePhotoVideoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/TakePhotoVideoTheme"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/TakePhotoVideoTheme" />
+        <activity
+            android:name=".preview.PreviewVideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/TakePhotoVideoTheme.PlayVideoTheme" />
     </application>
+
 </manifest>

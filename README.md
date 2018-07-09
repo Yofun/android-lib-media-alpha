@@ -170,9 +170,14 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 }
 ```
 
+### 4.播放视频
+``` java
+TakePhotoVideoHelper.startPlayVideo(getContext(), "搁浅 周杰伦", "http://videohy.tc.qq.com/vcloud1049.tc.qq.com/1049_M2100551002SKht50WIKgb1001542292.f20.mp4?vkey=1E1091D340EAF89B357873569097EA16352BBC255E72647C79053BE7612071EC4F8E3DB672EDA93002C56833E8079641BE9C8D834A1C85B5A34E269FEFCC6A697A8EACE7BED93FDBB775DAC90C9774D8725B85524902667C&ocid=332537772");
+```
+
 ## 历史更新
 
-#### 0.0.3
+### 0.0.3
 1. 修复拍照、录制视频方向的问题
 2. 可以横屏、竖屏拍照和录制视频
 3. 优化视频拍摄码率，默认使用720P录制

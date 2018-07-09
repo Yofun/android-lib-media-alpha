@@ -33,4 +33,10 @@
         android:layout_height="wrap_content"
         android:text="文件管理器选择文件"
         android:onClick="startFileExplorer"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="播放视频"
+        android:onClick="startPreviewVideo"/>
 </LinearLayout>

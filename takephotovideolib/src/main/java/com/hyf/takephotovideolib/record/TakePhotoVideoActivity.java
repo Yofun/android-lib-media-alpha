@@ -1,4 +1,4 @@
-package com.hyf.takephotovideolib;
+package com.hyf.takephotovideolib.record;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.OrientationEventListener;
+
+import com.hyf.takephotovideolib.R;
+import com.hyf.takephotovideolib.support.TakePhotoVideoHelper;
 
 import java.util.List;
 
