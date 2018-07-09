@@ -65,7 +65,7 @@
 
 ## 四、功能方法
 
-### 自定义拍照/录像
+### 1.自定义拍照/录像
 
 #### 启动
 1. 拍照
@@ -96,7 +96,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     }
 }
 ```
-### 开启系统相机拍照
+### 2.开启系统相机拍照
 #### 启动
 ``` java
 SystemCapturePhoto mCapturePhoto = new SystemCapturePhoto(getActivity(), RC_OPEN_SYSTEM_CAMERA, savePath);
@@ -151,7 +151,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 }
 ```
 
-### 调用文件管理器选择文件
+### 3.调用文件管理器选择文件
 #### 启动
 ```java
 TakePhotoVideoHelper.startFileExplorer(this, RC_OPEN_FILE_EXPLORER);
