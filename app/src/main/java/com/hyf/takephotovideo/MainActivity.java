@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.hyf.takephotovideolib.TakePhotoVideoHelper;
 import com.hyf.takephotovideolib.support.SystemCapturePhoto;
+import com.hyf.takephotovideolib.util.FileExplorerUriUtil;
 
 import java.io.File;
 
@@ -27,6 +29,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final int RC_OPEN_TAKE_PHOTO_VIDEO = 100;
+    private static final int RC_OPEN_SYSTEM_CAMERA = 101;
+    private static final int RC_OPEN_FILE_EXPLORER = 102;
+
+    private static final int Video_Duration = 10000;
+
+
     String savePath;
     String[] permiss = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO};
@@ -38,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         savePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + getPackageName();
-        mCapturePhoto = new SystemCapturePhoto(getActivity(),101,savePath);
+        mCapturePhoto = new SystemCapturePhoto(getActivity(), RC_OPEN_SYSTEM_CAMERA, savePath);
     }
 
     public void startRecord(View view) {
@@ -57,12 +66,16 @@ public class MainActivity extends AppCompatActivity {
         startOpenSysCamera();
     }
 
+    public void startFileExplorer(View view) {
+        TakePhotoVideoHelper.startFileExplorer(this, RC_OPEN_FILE_EXPLORER);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 100 && resultCode == RESULT_OK) {
+        if (requestCode == RC_OPEN_TAKE_PHOTO_VIDEO && resultCode == RESULT_OK) {
             String path = data.getStringExtra(TakePhotoVideoHelper.RESULT_DATA);
             Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
-        }else if (requestCode == 101 && resultCode == RESULT_OK){
+        } else if (requestCode == RC_OPEN_SYSTEM_CAMERA && resultCode == RESULT_OK) {
             final String filePath = mCapturePhoto.getFileAbsolutePath();
             Luban.with(this)
                     .load(filePath)
@@ -76,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .setCompressListener(new OnCompressListener() {
                         ProgressDialog dialog;
+
                         @Override
                         public void onStart() {
                             dialog = ProgressDialog.show(getContext(), "提示", "正在处理图片中...", false, false);
@@ -83,19 +97,28 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onSuccess(File file) {
-                            if (dialog!=null)dialog.dismiss();
+                            if (dialog != null) dialog.dismiss();
                             Toast.makeText(MainActivity.this, file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                             File yt = new File(filePath);
-                            if (yt.exists())yt.delete();
+                            if (yt.exists()) yt.delete();
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            if (dialog!=null)dialog.dismiss();
+                            if (dialog != null) dialog.dismiss();
                             Toast.makeText(MainActivity.this, filePath, Toast.LENGTH_SHORT).show();
                         }
                     })
                     .launch();
+        } else if (requestCode == RC_OPEN_SYSTEM_CAMERA && resultCode == RESULT_CANCELED) {
+            // 取消拍摄  删除创建的图片文件
+            String filePath = mCapturePhoto.getFileAbsolutePath();
+            File file = new File(filePath);
+            if (file.exists()) file.delete();
+        } else if (requestCode == RC_OPEN_FILE_EXPLORER && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            String filePath = FileExplorerUriUtil.getFilePathByUri(getContext(), uri);
+            Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -105,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
     @AfterPermissionGranted(requestCode)
     private void startRecordPhoto() {
         if (EasyPermissions.hasPermissions(getContext(), permiss))
-            TakePhotoVideoHelper.startTakePhoto(this, 100, savePath);
+            TakePhotoVideoHelper.startTakePhoto(this, RC_OPEN_TAKE_PHOTO_VIDEO, savePath);
         else
             EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
     }
@@ -113,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     @AfterPermissionGranted(requestCode)
     private void startRecordVideo() {
         if (EasyPermissions.hasPermissions(getContext(), permiss))
-            TakePhotoVideoHelper.startTakeVideo(this, 100, savePath, 15000);
+            TakePhotoVideoHelper.startTakeVideo(this, RC_OPEN_TAKE_PHOTO_VIDEO, savePath, Video_Duration);
         else
             EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
     }
@@ -121,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
     @AfterPermissionGranted(requestCode)
     private void startRecordPhotoVideo() {
         if (EasyPermissions.hasPermissions(getContext(), permiss))
-            TakePhotoVideoHelper.startTakePhotoVideo(this, 100, savePath, 15000);
+            TakePhotoVideoHelper.startTakePhotoVideo(this, RC_OPEN_TAKE_PHOTO_VIDEO, savePath, Video_Duration);
         else
             EasyPermissions.requestPermissions(getActivity(), "申请获取相关权限", requestCode, permiss);
     }

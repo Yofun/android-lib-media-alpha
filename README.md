@@ -43,7 +43,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     ```
 
-2. 项目完全集成了 GSY播放器  由于ndk的so库比较大，选择合适的平台进行编译，具体使用如下：
+2. 项目完全集成了 GSY播放器  由于ndk的so库比较大，请选择ndk进行过滤，具体使用如下：
 
     在gradle配置中
     ```
@@ -63,7 +63,9 @@
 
 3. `minSdkVersion 16`
 
-## 四、使用方法
+## 四、功能方法
+
+### 自定义拍照/录像
 
 #### 启动
 1. 拍照
@@ -84,12 +86,86 @@
 
 #### 回调
 
+
 ``` java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == 100 && resultCode == RESULT_OK) {
         String path = data.getStringExtra(TakePhotoVideoHelper.RESULT_DATA);
         Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
+    }
+}
+```
+### 开启系统相机拍照
+#### 启动
+``` java
+SystemCapturePhoto mCapturePhoto = new SystemCapturePhoto(getActivity(), RC_OPEN_SYSTEM_CAMERA, savePath);
+mCapturePhoto.openCamera();
+```
+#### 回调
+使用压缩
+``` java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == RC_OPEN_SYSTEM_CAMERA && resultCode == RESULT_OK) {
+        final String filePath = mCapturePhoto.getFileAbsolutePath();
+        Luban.with(this)
+                .load(filePath)
+                .ignoreBy(200)
+                .setTargetDir(savePath)
+                .filter(new CompressionPredicate() {
+                    @Override
+                    public boolean apply(String path) {
+                        return !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif"));
+                    }
+                })
+                .setCompressListener(new OnCompressListener() {
+                    ProgressDialog dialog;
+
+                    @Override
+                    public void onStart() {
+                        dialog = ProgressDialog.show(getContext(), "提示", "正在处理图片中...", false, false);
+                    }
+
+                    @Override
+                    public void onSuccess(File file) {
+                        if (dialog != null) dialog.dismiss();
+                        Toast.makeText(MainActivity.this, file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                        File yt = new File(filePath);
+                        if (yt.exists()) yt.delete();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (dialog != null) dialog.dismiss();
+                        Toast.makeText(MainActivity.this, filePath, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .launch();
+    } else if (requestCode == RC_OPEN_SYSTEM_CAMERA && resultCode == RESULT_CANCELED) {
+        // 取消拍摄  删除创建的图片文件
+        String filePath = mCapturePhoto.getFileAbsolutePath();
+        File file = new File(filePath);
+        if (file.exists()) file.delete();
+    }
+}
+```
+
+### 调用文件管理器选择文件
+#### 启动
+```java
+TakePhotoVideoHelper.startFileExplorer(this, RC_OPEN_FILE_EXPLORER);
+```
+
+#### 回调
+
+``` java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == RC_OPEN_FILE_EXPLORER && resultCode == RESULT_OK) {
+        Uri uri = data.getData();
+        String filePath = FileExplorerUriUtil.getFilePathByUri(getContext(), uri);
+        Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
     }
 }
 ```

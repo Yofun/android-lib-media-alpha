@@ -27,4 +27,10 @@
         android:layout_height="wrap_content"
         android:text="调用系统相机拍照"
         android:onClick="startSysCamera"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="文件管理器选择文件"
+        android:onClick="startFileExplorer"/>
 </LinearLayout>

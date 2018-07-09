@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TakePhotoVideoTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowAnimationStyle">@style/TakePhotoWindowAnim</item>
+    </style>
+
+    <style name="TakePhotoWindowAnim" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/hyf_take_photo_anim_up_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/hyf_take_photo_anim_up_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/hyf_take_photo_anim_up_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/hyf_take_photo_anim_up_out</item>
+    </style>
+</resources>

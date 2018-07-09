@@ -1,14 +1,7 @@
 package com.hyf.takephotovideolib;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.MediaStore;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by  HYF on 2018/6/29.
@@ -38,7 +31,8 @@ public class TakePhotoVideoHelper {
     }
 
     /**
-     *  拍摄视频
+     * 拍摄视频
+     *
      * @param activity
      * @param requestCode
      * @param savePath
@@ -49,7 +43,8 @@ public class TakePhotoVideoHelper {
     }
 
     /**
-     *  两个
+     * 两个
+     *
      * @param activity
      * @param requestCode
      * @param savePath
@@ -57,6 +52,32 @@ public class TakePhotoVideoHelper {
      */
     public static final void startTakePhotoVideo(Activity activity, int requestCode, String savePath, int duration) {
         startRecord(activity, Mode.RECORD_MODE_ALL, requestCode, duration, savePath);
+    }
+
+    /**
+     * 打开文件管理器进行选择文件  默认选择所有的   可以通过mime类型进行过滤
+     *
+     * @param activity
+     */
+    public static final void startFileExplorer(Activity activity, int requestCode) {
+        startFileExplorer(activity, requestCode, "*/*");
+    }
+
+    /**
+     * 打开文件管理器选择文件
+     *
+     * @param activity
+     * @param mimeType
+     */
+    public static final void startFileExplorer(Activity activity, int requestCode, String mimeType) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        //intent.setType(“image/*”);//选择图片
+        //intent.setType(“audio/*”); //选择音频
+        //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
+        //intent.setType(“video/*;image/*”);//同时选择视频和图片
+        intent.setType(mimeType);//无类型限制
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        activity.startActivityForResult(intent, requestCode);
     }
 
 

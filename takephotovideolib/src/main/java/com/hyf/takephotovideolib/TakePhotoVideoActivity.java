@@ -77,6 +77,12 @@ public class TakePhotoVideoActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.hyf_take_photo_anim_up_in, R.anim.hyf_take_photo_anim_up_out);
+    }
+
     /**
      * 返回视频路径
      *
