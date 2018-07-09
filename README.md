@@ -6,6 +6,8 @@
 | :-:| :-: |
 |丨Rainbow丨|775183940@qq.com|
 
+**[demo.apk下载地址](demo_release.apk)**
+
 ## 一、Download
 
 #### Project build.gradle中
