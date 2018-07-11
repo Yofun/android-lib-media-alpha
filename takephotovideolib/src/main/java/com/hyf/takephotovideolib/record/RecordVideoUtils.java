@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,8 +37,15 @@ public class RecordVideoUtils {
     private RecordVideoUtils() {
     }
 
+    public static final String getUUID() {
+        String uuid = UUID.randomUUID().toString();
+        uuid = uuid.replaceAll("-", "").toUpperCase();
+        return uuid;
+    }
+
     /**
-     *  获取手机摄像头支持预览的尺寸集合
+     * 获取手机摄像头支持预览的尺寸集合
+     *
      * @param camera
      * @return
      */
@@ -50,6 +58,7 @@ public class RecordVideoUtils {
 
     /**
      * 获取手机摄像头支持拍摄照片像素的集合
+     *
      * @param camera
      * @return
      */
@@ -61,7 +70,8 @@ public class RecordVideoUtils {
     }
 
     /**
-     *  获取摄像头支持拍摄视频的像素集合
+     * 获取摄像头支持拍摄视频的像素集合
+     *
      * @param camera
      * @return
      */
@@ -73,7 +83,8 @@ public class RecordVideoUtils {
     }
 
     /**
-     *  判断sd卡是否存在
+     * 判断sd卡是否存在
+     *
      * @return
      */
     public static boolean isSdcardExist() {

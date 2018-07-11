@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 
+import com.hyf.takephotovideolib.record.RecordVideoUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -42,7 +44,7 @@ public class SystemCapturePhoto {
         if (!parentFolder.exists()) {
             parentFolder.mkdirs();
         }
-        fileName = System.currentTimeMillis()+".jpg";
+        fileName = RecordVideoUtils.getUUID()+".jpg";
         File tempFile = new File(savePath,fileName);
         if (tempFile.exists()) {
             tempFile.delete();

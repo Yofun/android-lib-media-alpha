@@ -22,6 +22,7 @@ import java.io.File;
 import top.zibin.luban.CompressionPredicate;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
+import top.zibin.luban.OnRenameListener;
 
 /**
  * Created by  HYF on 2018/6/29.
@@ -237,6 +238,12 @@ public class RecordVideoFragment extends BaseRecordFragment implements RecordSta
                         @Override
                         public boolean apply(String path) {
                             return !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif"));
+                        }
+                    })
+                    .setRenameListener(new OnRenameListener() {
+                        @Override
+                        public String rename(String filePath) {
+                            return RecordVideoUtils.getUUID() + ".jpg";
                         }
                     })
                     .setCompressListener(new OnCompressListener() {

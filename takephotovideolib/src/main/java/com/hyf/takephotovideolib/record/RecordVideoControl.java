@@ -20,8 +20,6 @@ import com.hyf.takephotovideolib.view.SizeSurfaceView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 
@@ -112,7 +110,7 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
      * @return
      */
     public boolean startRecording() {
-        videoPath = savePath + File.separator + System.currentTimeMillis() + ".mp4";
+        videoPath = savePath + File.separator + RecordVideoUtils.getUUID() + ".mp4";
         isRecording = true;
         mCountTime = 0;
         releaseRecorder();
@@ -249,8 +247,7 @@ public class RecordVideoControl implements MediaRecorder.OnInfoListener,
                     if (!mediaStorageDir.exists()) {
                         mediaStorageDir.mkdirs();
                     }
-                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                    File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
+                    File mediaFile = new File(mediaStorageDir.getPath() + File.separator + RecordVideoUtils.getUUID() + ".jpg");
                     FileOutputStream stream = new FileOutputStream(mediaFile);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     stream.flush();
