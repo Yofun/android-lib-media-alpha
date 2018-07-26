@@ -26,7 +26,7 @@
 #### Module build.gradle中
 
     dependencies {
-        implementation 'com.github.HyfSunshine:TakePhotoVideoLib:0.0.4'
+        implementation 'com.github.HyfSunshine:TakePhotoVideoLib:0.0.6'
      }
 
 ## 二、已依赖
@@ -178,6 +178,9 @@ TakePhotoVideoHelper.startPlayVideo(getContext(), "搁浅 周杰伦", "http://vi
 ```
 
 ## 历史更新
+### 0.0.6
+- 修复重复快速点击拍照按钮时崩溃的bug
+
 ### 0.0.5
 1. 更新文件命名，大写UUID的文件命名方式，使文件唯一
 

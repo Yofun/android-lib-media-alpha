@@ -61,6 +61,8 @@ public class RecordStartView extends View {
     // 录制模式  默认只拍照
     private int mode = TakePhotoVideoHelper.Mode.RECORD_MODE_PHOTO;
 
+    private long clicktime = 0;
+
     public RecordStartView(Context context) {
         this(context, null);
     }
@@ -163,15 +165,21 @@ public class RecordStartView extends View {
                 progress = 0;
                 centerScale = 0f;
                 mHandler.removeMessages(RING_WHAT);
-                if (!isRecording && mode != TakePhotoVideoHelper.Mode.RECORD_MODE_VIDEO) {
-                    if (mOnRecordButtonListener != null) {
-                        mOnRecordButtonListener.onTakePhoto();
+                long now = System.currentTimeMillis();
+                if (Math.abs(now - clicktime) < 1000) {
+
+                } else {
+                    if (!isRecording && mode != TakePhotoVideoHelper.Mode.RECORD_MODE_VIDEO) {
+                        if (mOnRecordButtonListener != null) {
+                            mOnRecordButtonListener.onTakePhoto();
+                        }
                     }
+                    if (mOnRecordButtonListener != null) {
+                        mOnRecordButtonListener.onStopRecord();
+                    }
+                    isRecording = false;
                 }
-                if (mOnRecordButtonListener != null) {
-                    mOnRecordButtonListener.onStopRecord();
-                }
-                isRecording = false;
+                clicktime = now;
                 break;
         }
         return true;
