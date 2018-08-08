@@ -3,7 +3,10 @@ package com.hyf.takephotovideolib.support;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 
+import com.hyf.takephotovideolib.R;
 import com.hyf.takephotovideolib.preview.PreviewVideoActivity;
 import com.hyf.takephotovideolib.record.TakePhotoVideoActivity;
 
@@ -88,14 +91,16 @@ public class TakePhotoVideoHelper {
     public static final void startPlayVideo(Context context, String videoPath) {
         Intent intent = new Intent(context, PreviewVideoActivity.class);
         intent.putExtra(PreviewVideoActivity.FILE_PATH, videoPath);
-        context.startActivity(intent);
+        ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(context, R.anim.hyf_play_video_anim_scale_in, R.anim.hyf_play_video_anim_scale_out);
+        ActivityCompat.startActivity(context, intent, compat.toBundle());
     }
 
     public static final void startPlayVideo(Context context, String title, String videoPath) {
         Intent intent = new Intent(context, PreviewVideoActivity.class);
         intent.putExtra(PreviewVideoActivity.TITLE, title);
         intent.putExtra(PreviewVideoActivity.FILE_PATH, videoPath);
-        context.startActivity(intent);
+        ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(context, R.anim.hyf_play_video_anim_scale_in, R.anim.hyf_play_video_anim_scale_out);
+        ActivityCompat.startActivity(context, intent, compat.toBundle());
     }
 
 
@@ -106,7 +111,8 @@ public class TakePhotoVideoHelper {
         intent.putExtra(TakePhotoVideoActivity.MODE, mode);
         intent.putExtra(TakePhotoVideoActivity.DURATION, duration);
         intent.putExtra(TakePhotoVideoActivity.SAVE_PATH, savePath);
-        activity.startActivityForResult(intent, requestCode);
+        ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(activity, R.anim.hyf_take_photo_anim_up_in, R.anim.hyf_take_photo_anim_up_out);
+        ActivityCompat.startActivityForResult(activity, intent, requestCode, compat.toBundle());
     }
 
 
